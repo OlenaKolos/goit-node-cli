@@ -1,6 +1,6 @@
-const fs = require("fs/promises");
-const path = require("path");
-const { nanoid } = require("nanoid");
+const fs = require("node:fs/promises");
+const path = require("node:path");
+const { v4: uuidv4 } = require("uuid");
 
 const contactsPath = path.join(__dirname, "./src/db", "contacts.json");
 
@@ -39,15 +39,17 @@ async function removeContact(contactId) {
   }
 }
 
-async function addContact(data) {
+async function addContact(name, email, phone) {
   try {
-    const dataContacts = await listContacts();
     const newContact = {
-      id: nanoid(),
-      ...data,
+      id: uuidv4(),
+      name,
+      email,
+      phone,
     };
-    dataContacts.push(newContact);
-    await fs.writeFile(contactsPath, JSON.stringify(dataContacts, null, 2));
+    const allContacts = await listContacts();
+    allContacts.push(newContact);
+    await fs.writeFile(contactsPath, JSON.stringify(allContacts, null, 2));
     return newContact;
   } catch (error) {
     return null;
